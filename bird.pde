@@ -25,15 +25,14 @@ class bird {
   public float dist(bird b) {
     return this.pos.dist(b.pos);
   }
+  
+  public float distsq(bird b) {
+    return (b.pos.x-this.pos.x)*(b.pos.x-this.pos.x) + (b.pos.y-this.pos.y)*(b.pos.y-this.pos.y) ;
+  }
 
   void applyForce(PVector f) {
     PVector nf = PVector.div(f, mass/2);
     acc.add(nf);
-  }
-
-  void bounce() {
-    vel.mult(-1);
-    applyForce(acc.mult(-1));
   }
 
   PVector seek(PVector target) {
@@ -72,14 +71,12 @@ class bird {
   }
 
   //core
-  void update() {
+  void update(float frame) {
     c = color(255*noise(pos.x/div, pos.y/div, frame/div), 
       255*noise(pos.x/div+1000, pos.y/div+1000, frame/div), 
       255*noise(pos.x/div-1000, pos.y/div-1000, frame/div));
 
-    //softEdges();
     hardEdges();
-    //bounceEdge();
 
     //physics
     vel.add(acc);
@@ -91,23 +88,6 @@ class bird {
   }
 
   //forces
-
-  //applies a force to have them turn the away from the edge
-  private void softEdges() {
-    if (pos.x<tooCloseX) {
-      applyForce(new PVector(limit/6, 0));
-    }
-    if (pos.x>(width-tooCloseX)) {
-      applyForce(new PVector(-limit/6, 0));
-    }
-    if (pos.y<(tooCloseY)) {
-      applyForce(new PVector(0, limit/6));
-    }
-    if (pos.y>(height-tooCloseY)) {
-      applyForce(new PVector(0, -limit/6));
-    }
-  }
-
   //bounces bird to other side of screen
   private void hardEdges() {
     if (pos.x < -2*mass) pos.x = width+2*mass;
@@ -116,20 +96,6 @@ class bird {
     if (pos.y > height+2*mass) pos.y = -2*mass;
   }
 
-  private void bounceEdge() {
-    if (pos.x < 3) {
-      bounce();
-    }
-    if (pos.x>(width-3)) {
-      bounce();
-    }
-    if (pos.y<(3)) {
-      bounce();
-    }
-    if (pos.y>(height-3)) {
-      bounce();
-    }
-  }
 
   PVector alignment() {
     sum.mult(0);
