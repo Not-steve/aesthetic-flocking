@@ -1,5 +1,5 @@
 int flockSize = 500;
-float tooCloseX, tooCloseY, frame = 0;
+float frame = 0;
 float [] close = new float[3];
 PVector mouse = new PVector();
 ArrayList<bird> flock, nearby;
@@ -9,9 +9,7 @@ void setup() {
   close[0] = 50;
   close[1] = 50;
   close[2] = 30;
-  tooCloseX = width/15;
-  tooCloseY = height/15;
-
+  
   flock = new ArrayList();
   for (int i = 0; i< flockSize; i++) {
     flock.add(new bird());
@@ -44,7 +42,7 @@ void draw() {
       b.neighbors = neighbors(b, 0, close[2], b.neighbors);
       b.applyForce(b.seperation().mult(b.st));
 
-      b.update();
+      b.update(frame);
       b.show();
     }
   }
@@ -52,8 +50,10 @@ void draw() {
 
 ArrayList<bird> neighbors(bird b, float distance, ArrayList<bird> a) {
   ArrayList<bird> friends = new ArrayList();
+  distance *= distance;
+  
   for (bird c : a) {
-    if (b.dist(c) < distance && b != c) {
+    if (b.distsq(c) < distance && b != c) {
       friends.add(c);
     }
   }
@@ -62,8 +62,10 @@ ArrayList<bird> neighbors(bird b, float distance, ArrayList<bird> a) {
 
 ArrayList<bird> neighbors(bird b, float close, float distance, ArrayList<bird> a) {
   ArrayList<bird> friends = new ArrayList();
+  close *= close;
+  distance *= distance;
   for (bird c : a) {
-    if (b.dist(c) < distance && b.dist(c) > close && b != c) {
+    if (b.distsq(c) < distance && b.distsq(c) > close && b != c) {
       friends.add(c);
     }
   }
